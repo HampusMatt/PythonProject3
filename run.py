@@ -38,34 +38,46 @@ def rules():
         answer = input("Press y for yes and n for no: ")
     
     if answer == 'y':
-        print("Here are the rules...")
+        print("Here are the rules...\n")
     elif answer == 'n':
         print("Great, let's get started!\n")
 
-def deal_cards():
-    dealer_hand = [random.randint(1, 13), random.randint(1, 13)]
-    player_hand = [random.randint(1, 13), random.randint(1, 13)]
+def generate_cards():
+    dealer_hand = [random.randint(1, 11), random.randint(1, 10)]
+    player_hand = [random.randint(1, 11), random.randint(1, 10)]
+    return dealer_hand, player_hand
 
-    print(f"Dealers hand: {dealer_hand}")
-    print(f"Players hand: {player_hand}")
-    player_hand = new_card(player_hand)
-
-def new_card(player_hand):
-    while sum(player_hand) <= 21:
-        hit_or_stay = input("Would you like to hit or stay? ").lower()
-        if hit_or_stay == "hit":
-            player_hand.append(random.randint(1, 13))
-            print(f"player's hand: {player_hand}")
-        elif hit_or_stay == "stay":
+def player_turn(player_hand):
+    while sum(player_hand) < 21:
+        player_input = input("Would you like to hit or stay? ")
+        if player_input.lower() == "hit":
+            player_hand.append(random.randint(1, 10))
+            print("Player hand: ", player_hand)
+        elif player_input.lower() == "stay":
+            print("Player's turn over.\nDealer's turn.\n")
             break
         else:
-            print("Please enter either 'hit' or 'stay'.")
-    return player_hand
+            print("Invalid input, please try again. \n")
+    if sum(player_hand) > 21:
+        print("Game over")
+    
+def dealer_turn(dealer_hand):
+    while sum(dealer_hand) <= 18:
+        new_card = random.randint(1, 10)
+        dealer_hand.append(new_card)
+        if sum(dealer_hand) > 21:
+            dealer_hand.remove(new_card)
+    return dealer_hand
 
 def main():
     start_game()
     rules()
-    deal_cards()
-    new_card(player_hand)
+    dealer_hand, player_hand = generate_cards()
+    print("Dealer hand:", dealer_hand)
+    print("Player hand:", player_hand)
+    player_turn(player_hand)
+    dealer_turn(dealer_hand)
+    print("Dealer hand: ", dealer_hand)
+    print("Player hand: ", player_hand)
 
 main()
