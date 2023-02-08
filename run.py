@@ -1,21 +1,26 @@
 import random
 
-def start_game():
-    while True:
-        player_name = input("Welcome to the blackjack-table!\nPlease enter your name: ")
+def get_name():
+    try:
+        player_name = input("Please enter your name: ")
         if validate_name(player_name):
-            break
-    
+            return player_name
+        else:
+            raise ValueError()
+    except ValueError:
+        return get_name()
+
+def get_buy_in_value():
     while True:
          buy_in = input("How much would you like to bet today? ")
          if validate_buy_in(buy_in):
             break
     
-    return player_name, buy_in
+    return buy_in
 
 def validate_name(player_name):
     correct_name = player_name.isalpha()
-    if correct_name == True:
+    if correct_name:
         print(f"Nice to meet you, {player_name}!\n")
         return True
     else:
@@ -30,7 +35,7 @@ def validate_buy_in(buy_in):
         print("Please enter a valid buy-in amount between 50 and 5000.\n")
         return False
 
-def rules():
+def ask_to_show_rules():
     print("Before we start, would you like to go over the rules?")
     answer = input("Press y for yes and n for no: ")
     while answer not in ['y', 'n']:
@@ -42,9 +47,12 @@ def rules():
     elif answer == 'n':
         print("Great, let's get started!\n")
 
+def get_initial_cards():
+    return [random.randint(1, 11), random.randint(1, 10)]
+
 def generate_cards():
-    dealer_hand = [random.randint(1, 11), random.randint(1, 10)]
-    player_hand = [random.randint(1, 11), random.randint(1, 10)]
+    dealer_hand = get_initial_cards()
+    player_hand = get_initial_cards()
     return dealer_hand, player_hand
 
 def player_turn(player_hand):
@@ -67,11 +75,15 @@ def dealer_turn(dealer_hand):
         dealer_hand.append(new_card)
         if sum(dealer_hand) > 21:
             dealer_hand.remove(new_card)
+        else:
+            print("Dealer is dealing")
+            print(dealer_hand)
     return dealer_hand
 
 def main():
-    start_game()
-    rules()
+    name = get_name()
+    buy_in = get_buy_in_value()
+    ask_to_show_rules()
     dealer_hand, player_hand = generate_cards()
     print("Dealer hand:", dealer_hand)
     print("Player hand:", player_hand)
