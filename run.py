@@ -26,7 +26,7 @@ class PlayerInfo:
             else:
                 print("Invalid input, please try again. \n")
         if sum(self.player_hand) == 21:
-            print("BlackJack!")
+            print("BlackJack!\n")
         elif sum(self.player_hand) > 21:
             print("You're over 21! Busted!\n")
 
@@ -63,10 +63,10 @@ class PlayerInfo:
 
     def get_buy_in_value(self):
         """
-        Asks the player for an amount to be gambled with. Update this to an try-except.
+        Asks the player for an amount to be gambled with.
         """
         while True:
-            buy_in = input("How much would you like to bet today? ")
+            buy_in = input("How much would you like to gamble for today? ")
             if validate_buy_in(buy_in):
                 break
         
@@ -78,12 +78,12 @@ class PlayerInfo:
         Asks for a wager to be gambled on every round and checks if it's within the buy-in amount.
         """
         while True:
-            wager = int(input("How much would you like to wager? "))
-            if wager <= self.buy_in:
-                print(f"You have wagered {wager} on this turn\n")
+            wager = int(input("How much would you like to wager on this turn? "))
+            if wager <= self.buy_in and wager > 0:
+                print(f"\nYou have wagered {wager} on this turn\n")
                 break
             else:
-                print("Your wager can't be larger than your buy-in. Please try again.")
+                print("Your wager can't be larger than your buy-i nor less than 1.\nPlease try again.")
         self.wager = wager
 
     def set_updated_buy_in(self, updated_buy_in):
@@ -123,7 +123,7 @@ def ask_to_show_rules():
         answer = input("Press y for yes and n for no: ")
     
     if answer == 'y':
-        print("You get 2 cards. The goal is to get as close to 21 as possible without going over. You can either get another card (hit), or stay where you are. You play against the dealer. Whomever is closest to 21 wins.\n")
+        print("You get 2 cards. The goal is to get as close to 21 as possible\nwithout going over. You can either get another card (hit), or stay where you are.\nYou play against the dealer. Whomever is closest to 21 wins.\n")
     elif answer == 'n':
         print("Great, let's get started!\n")
 
@@ -164,6 +164,24 @@ def get_updated_buy_in(player, result):
     print("\nYour new buy-in is: ", updated_value)
     return updated_value
 
+def ask_to_continue():
+    while True:
+        user_input = input("Would you like to continue playing? (Y/N): ")
+        if user_input.lower() == "n":
+            print("\nThanks for playing!\nCome again soon!")
+            return False, user_input
+        elif user_input.lower() == "y":
+            return True, user_input
+        else:
+            print("Invalid input. Please try again.\n")
+
+def check_buy_in(updated_buy_in):
+    if updated_buy_in <= 0:
+        print("You don't have any money left to gamble with.\nThanks for playing!")
+        return False
+    else:
+        return True
+
 def main():
     player = PlayerInfo()
     ask_to_show_rules()
@@ -182,9 +200,17 @@ def main():
         print("Dealer hand: ", dealer.player_hand)
         result = check_results(player.player_hand, dealer.player_hand)
         updated_buy_in = get_updated_buy_in(player, result)
-        player.set_updated_buy_in(updated_buy_in)
+        if check_buy_in(updated_buy_in):
+            player.set_updated_buy_in(updated_buy_in)
+        else:
+            break
 
-        #Do you want to play, if no, then break out of the loop
+        continue_playing, user_input = ask_to_continue()
+        if not continue_playing:
+            break
+
+        if user_input.lower() == "y":
+            player.set_player_wager()
 
 
 main()
